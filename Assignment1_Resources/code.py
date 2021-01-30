@@ -26,38 +26,78 @@ def encode_data(text):
     # encode the words into integers 
 
     # return encoded examples
+    vocab = []
+    for tokens in text:
+        vocab = vocab+tokens
+    vocab = set(vocab)
     
+    encoder = dict()
+    count = 1
+    for word in vocab:
+        encoder[word] = count
+        count = count +1
     
-
+    text_encoded = []
+    
+    for tokens in text:
+        vec = []
+        for word in tokens:
+            vec.append(encoder[word])
+        text_encoded.append(vec)
+    
+    return text_encoded
 
 
 def convert_to_lower(text):
     # return the reviews after convering then to lowercase
-    return text.lower()
+    temp = []
+    for sentence in text:
+        s = sentence.lower()
+        temp.append(s)
+    return temp
 
 
 def remove_punctuation(text):
     # return the reviews after removing punctuations
-    res = re.sub(r'[^\w\s]', '', text)
-    return res
+    temp = []
+    for sentence in text:
+        res = re.sub(r'[^\w\s]', '', text)
+        temp.append(res)
+    return temp
 
 def remove_stopwords(text):
     # return the reviews after removing the stopwords
-    stop_words = set(stopwords.words('english'))
-    tokens =  word_tokenize(text)
     temp = []
-    for w in tokens:  
-        if w not in stop_words:  
-            temp.append(w)  
+    stop_words = set(stopwords.words('english'))
+    for sentence in text:
+        tokens =  word_tokenize(sentence)
+        new_sent = []
+        for w in tokens:  
+            if w not in stop_words:  
+                new_sent.append(w)
+        new_sent = str(new_sent)
+        temp.append(new_sent)
+    return temp
 
 def perform_tokenization(text):
     # return the reviews after performing tokenization
-    tokens = word_tokenize(text)
-    return tokens
-
+    temp = []
+    for sentence in text:
+        tokens =  word_tokenize(sentence)
+        temp.append(tokens)
+    return temp
 
 def perform_padding(data):
     # return the reviews after padding the reviews to maximum length
+    max_l = 0
+    for vec in data:
+        if max_l<len(vec):
+            max_l = len(vec)
+    appended_data = data
+    for i,vec in enumerate(appended_data):
+        if len(vec)<max_l:
+            appended_data[i] = vec + list(np.zeros(max_l-len(vec)))
+    return appended_data
 
 def preprocess_data(data):
     # make all the following function calls on your data
