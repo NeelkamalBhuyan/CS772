@@ -6,4 +6,4 @@
 ### * Amitrajit Bhattacharjee
 ### * Aadesh Madnaik
 
-Refer [this link] (https://docs.google.com/presentation/d/1BxoDxYn6kMx30SbGuC39k-uVNOm5vI369mZM_hgsi3I/edit?usp=sharing) for the presentation slides.
+Refer [this link](https://docs.google.com/presentation/d/1BxoDxYn6kMx30SbGuC39k-uVNOm5vI369mZM_hgsi3I/edit?usp=sharing) for the presentation slides.
