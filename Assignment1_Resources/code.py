@@ -18,7 +18,7 @@ Execute your code using the provided auto.py script(NO EDITS PERMITTED) as your 
 '''
 
 
-def encode_data(text):
+def encode_data(text,test_mode=False):
     # This function will be used to encode the reviews using a dictionary(created using corpus vocabulary) 
     
     # Example of encoding :"The food was fabulous but pricey" has a vocabulary of 4 words, each one has to be mapped to an integer like: 
@@ -32,10 +32,13 @@ def encode_data(text):
     vocab = set(vocab)
     
     encoder = dict()
+    
     count = 1
     for word in vocab:
         encoder[word] = count
         count = count +1
+    if test_mode:
+        encoder.update(train_encoder)
     
     text_encoded = []
     
@@ -44,8 +47,8 @@ def encode_data(text):
         for word in tokens:
             vec.append(encoder[word])
         text_encoded.append(vec)
-    
-    return text_encoded
+    print("encoding done")
+    return text_encoded,encoder
 
 
 def convert_to_lower(text):
@@ -61,8 +64,9 @@ def remove_punctuation(text):
     # return the reviews after removing punctuations
     temp = []
     for sentence in text:
-        res = re.sub(r'[^\w\s]', '', text)
+        res = re.sub(r'[^\w\s]', '', sentence)
         temp.append(res)
+    print("punctuation removed")
     return temp
 
 def remove_stopwords(text):
@@ -77,6 +81,7 @@ def remove_stopwords(text):
                 new_sent.append(w)
         new_sent = str(new_sent)
         temp.append(new_sent)
+    print("stopwords removed")
     return temp
 
 def perform_tokenization(text):
@@ -85,41 +90,34 @@ def perform_tokenization(text):
     for sentence in text:
         tokens =  word_tokenize(sentence)
         temp.append(tokens)
+    print("tokenisation done")
     return temp
 
-def perform_padding(data):
+def perform_padding(data,test_mode=False):
     # return the reviews after padding the reviews to maximum length
     max_l = 0
     for vec in data:
         if max_l<len(vec):
             max_l = len(vec)
+    if test_mode: 
+        max_l=len(train_reviews[0])
     appended_data = data
     for i,vec in enumerate(appended_data):
         if len(vec)<max_l:
             appended_data[i] = vec + list(np.zeros(max_l-len(vec)))
+    print("padding done")
     return appended_data
 
-def preprocess_data(data):
-    # make all the following function calls on your data
-    # EXAMPLE:->
-        '''
-        review = data["reviews"]
-        review = convert_to_lower(review)
-        review = remove_punctuation(review)
-        review = remove_stopwords(review)
-        review = perform_tokenization(review)
-        review = encode_data(review)
-        review = perform_padding(review)
-        '''
-    # return processed data
+def preprocess_data(data,test_mode=False):
+    
     review = data["reviews"]
     review = convert_to_lower(review)
     review = remove_punctuation(review)
     review = remove_stopwords(review)
     review = perform_tokenization(review)
-    review = encode_data(review)
-    review = perform_padding(review)
-    return review
+    review,encoder = encode_data(review,test_mode)
+    review = perform_padding(review,test_mode)
+    return review,encoder
 
 
 
@@ -157,9 +155,9 @@ def main(train_file, test_file):
     
     batch_size,epochs=
     
-    train_reviews=preprocess_data(train_data)
-    test_reviews=preprocess_data(test_data)
-
+    train_reviews,train_encoder=preprocess_data(train_data)
+    test_reviews,test_encoder=preprocess_data(test_data,True)
+    train_ratings = train_data["ratings"]
     model=NeuralNet(train_reviews,train_ratings)
     model.build_nn()
     model.train_nn(batch_size,epochs)
